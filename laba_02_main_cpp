@@ -1,1 +1,41 @@
+#include "Product.hpp"
+#include <iostream>
 
+int main() {
+    setlocale(LC_ALL, "Rus");
+    using namespace mt;
+
+    Product A(
+        "А",
+        "Продукт А",
+        100,
+        50,
+        "Магазин",
+        { "а", "б", "в" }
+    );
+
+    Product B(
+        "Б",
+        "Продукт Б",
+        100,
+        30,
+        "Магазин",
+        { "а", "м", "н" }
+    );
+
+    std::cout << "A\n";
+    A.print_info();
+
+    std::cout << "\nB\n";
+    B.print_info();
+
+    std::cout << "\nA + B\n";
+    Product C = A + B;
+    C.print_info();
+
+    std::cout << "\nA - B\n";
+    Product D = A - B;
+    D.print_info();
+
+    return 0;
+}
