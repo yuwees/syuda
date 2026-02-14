@@ -1,0 +1,174 @@
+#include "Product.hpp"
+#include <iostream>
+#include <algorithm>
+#include <stdexcept>
+
+namespace mt {
+
+    // Проверки 
+    bool Product::is_price_valid(double price) const {
+        return price >= 0;
+    }
+
+    //  Конструкторы 
+    Product::Product()
+        : name_("Не задано"),
+        description_("Не задано"),
+        price_(0),
+        expiration_days_(0),
+        place_("Не указано") {
+        std::cerr << "Вызван конструктор по умолчанию Product\n";
+    }
+
+    Product::Product(const std::string& name,
+        const std::string& description,
+        double price,
+        int expiration_days,
+        const std::string& place,
+        const std::vector<std::string>& comp)
+        : name_(name),
+        description_(description),
+        price_(price),
+        expiration_days_(expiration_days),
+        place_(place),
+        composition(comp) {
+
+        if (!is_price_valid(price_))
+            throw std::invalid_argument("Цена не может быть отрицательной");
+        if (expiration_days_ < 0)
+            throw std::invalid_argument("Срок годности < 0");
+
+        std::cerr << "Вызван конструктор с параметрами Product\n";
+    }
+
+    Product::Product(const Product& other)
+        : name_(other.name_),
+        description_(other.description_),
+        price_(other.price_),
+        expiration_days_(other.expiration_days_),
+        place_(other.place_),
+        composition(other.composition) {
+        std::cerr << "Вызван конструктор копирования Product\n";
+    }
+
+    //Оператор = 
+    Product& Product::operator=(const Product& other) {
+        if (this != &other) {
+            name_ = other.name_;
+            description_ = other.description_;
+            price_ = other.price_;
+            expiration_days_ = other.expiration_days_;
+            place_ = other.place_;
+            composition = other.composition;
+        }
+        return *this;
+    }
+
+    // Деструктор
+    Product::~Product() {
+        composition.clear(); 
+        std::cerr << "Вызван деструктор Product: " << name_ << "\n";
+    }
+
+    //  Set / Get 
+    void Product::set_name(const std::string& name) {
+        name_ = name;
+    }
+
+    std::string Product::get_name() const {
+        return name_;
+    }
+
+    void Product::set_description(const std::string& description) {
+        description_ = description;
+    }
+
+    std::string Product::get_description() const {
+        return description_;
+    }
+
+    void Product::set_price(double price) {
+        if (!is_price_valid(price))
+            throw std::invalid_argument("Цена < 0");
+        price_ = price;
+    }
+
+    double Product::get_price() const {
+        return price_;
+    }
+
+    void Product::set_expiration_days(int days) {
+        if (days < 0)
+            throw std::invalid_argument("Срок < 0");
+        expiration_days_ = days;
+    }
+
+    int Product::get_expiration_days() const {
+        return expiration_days_;
+    }
+
+    void Product::set_place(const std::string& place) {
+        place_ = place;
+    }
+
+    // Методы 
+    void Product::print_info() const {
+        std::cout << "Название: " << name_ << "\n"
+            << "Описание: " << description_ << "\n"
+            << "Цена: " << price_ << "\n"
+            << "Срок годности: " << expiration_days_ << " дней\n"
+            << "Место: " << place_ << "\n"
+            << "Состав: ";
+        for (const auto& i : composition)
+            std::cout << i << " ";
+        std::cout << "\n";
+    }
+
+    void Product::reduce_expiration(int days) {
+        expiration_days_ = std::max(0, expiration_days_ - days);
+    }
+
+    //Оператор + 
+    Product Product::operator+(const Product& other) const {
+        std::vector<std::string> new_comp = composition;
+
+        for (const auto& item : other.composition) {
+            if (std::find(new_comp.begin(), new_comp.end(), item) == new_comp.end())
+                new_comp.push_back(item);
+        }
+
+        return Product(
+            "смесь " + name_ + " и " + other.name_,
+            description_,
+            (price_ + other.price_) * 0.9,
+            std::min(expiration_days_, other.expiration_days_),
+            place_,
+            new_comp
+        );
+    }
+
+    //Оператор - 
+    Product Product::operator-(const Product& other) const {
+        Product result = *this;
+        result -= other;
+        return result;
+    }
+
+    // Оператор -=
+    Product& Product::operator-=(const Product& other) {
+        name_ = "выбор " + name_ + " без " + other.name_;
+        price_ *= 0.9;
+        expiration_days_ = std::max(0, expiration_days_ - 2);
+
+        for (const auto& item : other.composition) {
+            composition.erase(
+                std::remove(composition.begin(), composition.end(), item),
+                composition.end()
+            );
+        }
+
+        composition.push_back("консервант Т1000");
+        return *this;
+    }
+
+}
