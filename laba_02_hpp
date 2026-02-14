@@ -1,0 +1,61 @@
+#pragma once
+#include <string>
+#include <vector>
+
+namespace mt {
+
+    class Product {
+    private:
+        std::string name_;
+        std::string description_;
+        double price_;
+
+        bool is_price_valid(double price) const;
+
+    protected:
+        int expiration_days_;
+
+    public:
+        std::string place_;                  
+        std::vector<std::string> composition; // динамическое поле
+
+        // Конструкторы
+        Product(); // по умолчанию
+        Product(const std::string& name,
+            const std::string& description,
+            double price,
+            int expiration_days,
+            const std::string& place,
+            const std::vector<std::string>& composition);
+
+        Product(const Product& other);             // копирования
+        Product& operator=(const Product& other);  // присваивания
+
+        ~Product(); 
+
+        // Set / Get 
+        void set_name(const std::string& name);
+        std::string get_name() const;
+
+        void set_description(const std::string& description);
+        std::string get_description() const;
+
+        void set_price(double price);
+        double get_price() const;
+
+        void set_expiration_days(int days);
+        int get_expiration_days() const;
+
+        void set_place(const std::string& place);
+
+        //  Методы 
+        void print_info() const;
+        void reduce_expiration(int days);
+
+        // Операторы
+        Product operator+(const Product& other) const;
+        Product operator-(const Product& other) const;
+        Product& operator-=(const Product& other);
+    };
+
+}
