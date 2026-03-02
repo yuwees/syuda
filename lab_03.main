@@ -1,1 +1,43 @@
+#include "Commission.hpp"
+#include <iostream>
 
+using namespace mt;
+
+void lab_review() {
+    std::cout << "\n Оценка лабораторной работы \n";
+    std::cout << "Интерес: 6/10\n";
+    std::cout << "Наполненность: 10/10\n";
+    std::cout << "Сложность: 8/10\n";
+}
+
+int main() {
+    setlocale(LC_ALL, "Ru");
+
+    Product A("А", "Продукт А", 100, 50, "Магазин",
+        { {"а",10}, {"б",5}, {"в",3} });
+
+    Product B("Б", "Продукт Б", 100, 30, "Магазин",
+        { {"а",2}, {"м",4}, {"н",6} });
+
+    Product C = A + B;
+    Product D = A - B;
+
+    A.print_info();
+    B.print_info();
+    C.print_info();
+    D.print_info();
+
+    Commission com("Казань", { "Т1000" }, 10);
+    com.print_info();
+
+    // Проверка товара комиссией
+    if (com.check_product(D))
+        std::cout << "Товар прошел проверку\n";
+    else
+        std::cout << "Товар НЕ прошел проверку\n";
+
+
+    lab_review();
+
+    return 0;
+}
